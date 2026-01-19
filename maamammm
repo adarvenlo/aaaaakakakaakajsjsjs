@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ToBeDo - Hyperlocal Help</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. CSS VARIABLES & THEME SETUP --- */
+        :root {
+            /* Light Mode Colors */
+            --brand-blue: #0f172a; /* Diep marineblauw */
+            --action-blue: #2563EB; /* Fel elektrisch blauw */
+            --bg-color: #F8FAFC;   /* Heel licht grijs/wit */
+            --card-bg: #FFFFFF;
+            --text-main: #0f172a;
+            --text-sub: #64748B;
+            --border-color: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.85); /* Glass effect */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Colors (OLED Black style) */
+            --brand-blue: #F8FAFC; /* Wit voor headlines in dark mode */
+            --action-blue: #3B82F6; /* Iets lichter blauw voor contrast */
+            --bg-color: #000000;   /* Pitch black */
+            --card-bg: #121212;    /* Dark gray surface */
+            --text-main: #F1F5F9;
+            --text-sub: #94A3B8;
+            --border-color: #333333;
+            --nav-bg: rgba(18, 18, 18, 0.85);
+            --shadow-sm: none;
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-top: 70px; /* Ruimte voor header */
+            padding-bottom: 90px; /* Ruimte voor bottom nav */
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        /* --- 2. HEADER (Sticky Top) --- */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main); /* Past zich aan in dark mode */
+            letter-spacing: -0.5px;
+        }
+        
+        .logo span {
+            color: var(--action-blue);
+        }
+
+        .header-icons i {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* --- 3. BOTTOM NAVIGATION (Sticky Bottom) --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px; /* Iets hoger voor comfort */
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: 10px; /* Voor iPhone home bar */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-sub);
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 60px;
+            transition: color 0.2s;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--action-blue);
+        }
+
+        /* Speciale stijl voor de Post knop in het midden */
+        .nav-item-post {
+            position: relative;
+            top: -15px;
+            background: var(--action-blue);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+            color: white !important;
+        }
+        .nav-item-post i {
+            font-size: 24px;
+            margin-bottom: 0;
+        }
+
+        /* --- 4. SECTIONS & CARDS --- */
+        .section {
+            display: none;
+            padding: 0 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Design */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            font-size: 13px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .distance-badge {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--action-blue);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .card-body p {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .price-tag {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .btn {
+            background-color: var(--action-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        /* --- 5. SPECIFIC PAGES (Post & Search) --- */
+        /* Search Bar */
+        .search-container {
+            position: sticky;
+            top: 60px;
+            background: var(--bg-color);
+            padding: 10px 0 20px 0;
+            z-index: 900;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--action-blue);
+        }
+
+        /* Skills List */
+        .person-card {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .person-card:last-child { border-bottom: none; }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .person-info {
+            flex: 1;
+        }
+        .person-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+        .skill-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .skill-tag {
+            background: var(--border-color);
+            color: var(--text-main);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Post Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+        .upload-box {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-sub);
+            cursor: pointer;
+            background: rgba(0,0,0,0.02);
+        }
+
+        /* Profile & Toggle */
+        .profile-header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .profile-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--border-color);
+            margin: 0 auto 10px auto;
+        }
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Switch Slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--action-blue); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="logo">ToBe<span>Do</span></div>
+        <div class="header-icons">
+            <i class="fa-regular fa-bell"></i>
+        </div>
+    </header>
+
+    <main>
+        
+        <section id="feed" class="section active">
+            <h2 style="margin: 10px 0 15px 0; font-size: 18px;">Things To Do</h2>
+            
+            <div id="feed-container"></div>
+        </section>
+
+        <section id="search" class="section">
+            <div class="search-container">
+                <input type="text" class="input-field" placeholder="Search skills (e.g. moving, cleaning)...">
+            </div>
+            
+            <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-sub); margin-bottom: 10px;">People Nearby</h3>
+            <div class="card" id="skills-container" style="padding: 0 16px;">
+                </div>
+        </section>
+
+        <section id="post" class="section">
+            <h2 style="margin-bottom: 20px;">Create a Task</h2>
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">Task Title</label>
+                    <input type="text" class="input-field" placeholder="E.g. Help moving a couch">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="input-field" rows="3" placeholder="Describe what needs to be done..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Photo (Optional)</label>
+                    <div class="upload-box">
+                        <i class="fa-solid fa-camera"></i> &nbsp; Add Photo
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount (€)</label>
+                    <input type="number" class="input-field" placeholder="20">
+                </div>
+                <button class="btn" style="width: 100%;">Post Task</button>
+            </div>
+        </section>
+
+        <section id="profile" class="section">
+            <div class="profile-header">
+                <div class="profile-avatar-lg"></div>
+                <h2>My Account</h2>
+                <p style="color: var(--text-sub);">@username • 📍 Amsterdam</p>
+            </div>
+
+            <div class="settings-row">
+                <span>Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="settings-row">
+                <span>Notifications</span>
+                <i class="fa-solid fa-chevron-right" style="color: var(--text-sub); font-size: 12px;"></i>
+            </div>
+            <div class="settings-row">
+                <span>My Skills</span>
+                <i class="fa-solid fa-chevron-right" style="color: var(--text-sub); font-size: 12px;"></i>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('feed', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('search', this)">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Find</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('post', this)">
+            <div class="nav-item-post">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span style="margin-top: 20px;">Post</span>
+        </div>
+        <div class="nav-item" onclick="alert('Chat functie komt in de volgende update!')">
+            <i class="fa-regular fa-comment-dots"></i>
+            <span>Chat</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile', this)">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+        </div>
+    </nav>
+
+    <script>
+        // --- MOCK DATA (Voorbeeld content) ---
+        const tasks = [
+            { title: "Kast naar zolder tillen", desc: "Ik zoek iemand die even 10 minuten kan helpen tillen. Zwaar ding.", price: 15, dist: "200m", time: "Now" },
+            { title: "Figuranten gezocht videoclip", desc: "Voor een TikTok shoot hebben we 5 mensen nodig op de achtergrond.", price: 25, dist: "1.2km", time: "Today" },
+            { title: "Hond uitlaten (Grote herder)", desc: "Ik ben ziek, wie kan Max uitlaten?", price: 10, dist: "500m", time: "2h left" },
+            { title: "IKEA kast monteren", desc: "PAX kast in elkaar zetten, ik heb gereedschap.", price: 40, dist: "800m", time: "Tomorrow" },
+            { title: "Boodschappen doen", desc: "Klein lijstje bij de AH halen.", price: 7.50, dist: "150m", time: "Now" }
+        ];
+
+        const people = [
+            { name: "Sanne Janssen", skills: ["Graphic Design", "Moving"], rating: 4.9, dist: "300m" },
+            { name: "Mark de Vries", skills: ["Handyman", "Painting", "Gardening"], rating: 4.5, dist: "1.5km" },
+            { name: "Kevin B.", skills: ["Tech Support", "Gaming"], rating: 5.0, dist: "600m" }
+        ];
+
+        // --- RENDER FUNCTIONS ---
+        function renderFeed() {
+            const container = document.getElementById('feed-container');
+            let html = '';
+            tasks.forEach(task => {
+                html += `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${task.title}</span>
+                        <span class="distance-badge"><i class="fa-solid fa-location-arrow"></i> ${task.dist}</span>
+                    </div>
+                    <div class="card-body">
+                        <p>${task.desc}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="price-tag">€ ${task.price.toFixed(2)}</span>
+                        <button class="btn">I can help</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderSkills() {
+            const container = document.getElementById('skills-container');
+            let html = '';
+            people.forEach(p => {
+                let tags = p.skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+                html += `
+                <div class="person-card">
+                    <div class="avatar">${p.name.charAt(0)}</div>
+                    <div class="person-info">
+                        <div class="person-name">${p.name} <span style="font-size:12px; color:#fbbf24;">★ ${p.rating}</span></div>
+                        <div class="skill-tags">${tags}</div>
+                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">📍 ${p.dist}</div>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">Approach</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabId, navElement) {
+            // Verberg alle secties
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            // Toon de gekozen sectie
+            document.getElementById(tabId).classList.add('active');
+
+            // Update Nav Icons
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Als navElement is meegegeven (soms niet bij automatische switch)
+            if(navElement) {
+                navElement.classList.add('active');
+            }
+        }
+
+        // --- DARK MODE LOGIC ---
+        const toggle = document.getElementById('darkModeToggle');
+        
+        // Check local storage of systeem voorkeur bij laden
+        if (localStorage.getItem('theme') === 'dark' || 
+           (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggle.checked = true;
+        }
+
+        toggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Init
+        renderFeed();
+        renderSkills();
+
+    </script>
+</body>
+</html>
